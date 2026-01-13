@@ -18,33 +18,15 @@
         .btn-load { background: #6366f1; color: white; }
         .btn-reset { background: #94a3b8; color: white; }
         #chart-container { height: 250px; margin-bottom: 15px; cursor: crosshair; }
-        
-        .wp-row { display: grid; grid-template-columns: 30px 40px 1fr 70px 60px 100px 90px 90px 100px 75px 70px 80px 30px; gap: 8px; 
-                  padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+        .wp-row { display: grid; grid-template-columns: 30px 40px 1fr 70px 60px 100px 90px 90px 100px 75px 70px 80px 30px; gap: 8px; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
         .wp-header { font-weight: bold; color: var(--gray); text-transform: uppercase; font-size: 0.6rem; background: #f1f5f9; position: sticky; top: 0; z-index: 10; }
-        
         input, textarea { padding: 5px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; font-size: 11px; }
-        textarea { resize: vertical; min-height: 40px; margin-top: 10px; font-family: inherit; }
         .badge { padding: 4px; border-radius: 4px; text-align: center; font-weight: bold; font-family: monospace; }
         .eta { background: var(--dark); color: white; }
-        .race-time { background: #e2e8f0; color: var(--dark); }
-        .diff-p { color: #059669; font-weight: 600; }
-        .diff-m { color: #dc2626; font-weight: 600; }
         .side { background: var(--dark); color: white; position: sticky; top: 20px; height: fit-content; text-align: center; padding: 15px; border-radius: 12px; }
-        
-        .slope-pill { padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; }
-        .slope-low { background: #059669; }
-        .slope-mid { background: #d97706; }
-        .slope-high { background: #dc2626; }
-
-        .section-detail { display: none; background: #fffcfc; padding: 15px; border: 1px solid #feb2b2; border-radius: 0 0 8px 8px; margin-top: -1px; }
-        .detail-grid { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
-        .slope-val { font-size: 1.5rem; font-weight: 900; color: var(--swiss-red); }
-        @media print { 
-            .toolbar, .btn, .side, .btn-calc { display: none !important; } 
-            .layout { grid-template-columns: 1fr; }
-            .section-detail { display: block !important; page-break-inside: avoid; }
-        }
+        #helpModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:20px; }
+        .help-content { background: white; color: var(--dark); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 12px; position: relative; }
+        .section-detail { display: none; background: #fffcfc; padding: 15px; border: 1px solid #feb2b2; border-radius: 0 0 8px 8px; }
     </style>
 </head>
 <body>
@@ -61,34 +43,27 @@
             <button class="btn btn-load" onclick="loadFromLocal()">📥 RÉCUPÉRER</button>
             <button class="btn btn-reset" onclick="resetAll()">🗑️ RESET</button>
             <div style="flex-grow:1"></div>
-            <label>Départ : </label>
             <input type="time" id="startTime" value="08:00" style="width:85px" onchange="calculate(); saveToLocal();">
         </div>
-
         <div id="chart-container"><canvas id="mainChart"></canvas></div>
-
         <div class="wp-header wp-row">
-            <div onclick="toggleAllDetails()" style="cursor:pointer">👁️</div>
-            <div onclick="toggleAllDetails()" style="cursor:pointer">Icon</div>
-            <div>Nom</div><div>Km</div><div>Alt.</div><div>D+/- Seg.</div><div>D+/- Fait</div><div>D+/- Reste</div><div>Allure m/km</div><div>Pause</div><div>Passage</div><div>Course</div><div></div>
+            <div onclick="toggleAllDetails()">👁️</div><div>Icon</div><div>Nom</div><div>Km</div><div>Alt.</div><div>D+/- Seg.</div><div>D+/- Fait</div><div>D+/- Reste</div><div>Allure</div><div>Pause</div><div>Passage</div><div>Course</div><div></div>
         </div>
         <div id="wpList"></div>
     </div>
-
     <div class="card side">
         <h3>Récapitulatif</h3>
         <p>Distance : <b id="statDist">0</b> km</p>
-        <p>Dénivelé : <br><span class="diff-p">▲ <span id="statDplus">0</span>m</span> / <span class="diff-m">▼ <span id="statDminus">0</span>m</span></p>
+        <p>Dénivelé : <br><span style="color:#10b981">▲ <span id="statDplus">0</span>m</span> / <span style="color:#ef4444">▼ <span id="statDminus">0</span>m</span></p>
         <hr style="opacity:0.2">
         <p>ARRIVÉE ESTIMÉE</p>
         <div style="font-size: 2.2rem; font-weight: 900; color: var(--swiss-red);" id="finalEta">--:--</div>
-        <p>CHRONO TOTAL : <br><b id="finalRaceTime">--</b></p>
-        <p>ALLURE MOYENNE : <br><b id="avgPace" style="color:#6366f1;">--:--</b> min/km</p>
-        <button onclick="window.print()" style="width:100%; margin-top:15px; padding:10px; background:white; color:var(--dark); border:none; border-radius:6px; font-weight:bold;">🖨️ IMPRIMER ROADBOOK</button>
+        <p>CHRONO TOTAL : <b id="finalRaceTime">--</b></p>
+        <p>ALLURE MOYENNE : <b id="avgPace">--:--</b></p>
     </div>
 </div>
 
-    <div id="helpModal">
+<div id="helpModal">
     <div class="help-content">
         <button onclick="toggleHelp()" style="position:absolute; right:15px; top:15px; border:none; background:none; font-size:2rem; cursor:pointer;">&times;</button>
         <h1 style="color:var(--swiss-red); margin-top:0;">WattPace</h1>
@@ -111,7 +86,7 @@
             Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec tous vos nouveaux points de passage intégrés pour votre montre GPS (Waypoint).</p>
             <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red);">
                 <h3>💡 Conseil pour des tracés propres (GPX "Bruité")</h3>
-                <p>Il arrive que certains fichiers GPX soient "bruités" : ils contiennent trop de points inutiles ou des erreurs d'altitude en dents de scie, ce qui fausse les calculs de dénivelé. La solution recommandée : importez-le dans Garmin Connect, enregistrez-le, puis ré-exportez-le. Garmin applique automatiquement un lissage intelligent qui rend la lecture beaucoup plus fluide. Il ne reste plus qu'à le ré-importer dans WattPace.</p>
+                <p>Il arrive que certains fichiers GPX soient "bruités" : ils contiennent trop de points inutiles ou des erreurs d'altitude en dents de scie, ce qui fausse les calculs de dénivelé. La solution recommandée : importez-le dans Garmin Connect (ou autre application), enregistrez-le, puis ré-exportez-le. Garmin (ou autre) applique automatiquement un lissage intelligent qui rend la lecture beaucoup plus fluide. Il ne reste plus qu'à le ré-importer dans WattPace.</p>
             </div>
         </div>
         <button class="btn btn-calc" onclick="toggleHelp()" style="width:100%; margin-top:20px;">J'AI COMPRIS</button>
@@ -119,15 +94,12 @@
 </div>
 
 <script>
-let fullTrace = []; let waypoints = []; let mainChart = null;
+let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts = {}; let allOpen = false;
 
 function toggleHelp() {
     const modal = document.getElementById('helpModal');
-    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
 }
-
-<script>
-let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts = {}; let allOpen = false;
 
 function saveToLocal() { localStorage.setItem('swissPaceData', JSON.stringify({ waypoints, startTime: document.getElementById('startTime').value })); }
 function loadFromLocal() { const saved = localStorage.getItem('swissPaceData'); if (saved) { const data = JSON.parse(saved); waypoints = data.waypoints; document.getElementById('startTime').value = data.startTime || "08:00"; render(); } }
@@ -142,7 +114,6 @@ document.getElementById('gpxIn').onchange = e => {
 function parseGPX(xmlText) {
     const xml = new DOMParser().parseFromString(xmlText, "text/xml");
     const pts = Array.from(xml.querySelectorAll('trkpt'));
-    const wpts = Array.from(xml.querySelectorAll('wpt'));
     let d = 0, dp = 0, dm = 0;
     fullTrace = pts.map((p, i) => {
         let lat = parseFloat(p.getAttribute('lat')), lon = parseFloat(p.getAttribute('lon')), ele = parseFloat(p.querySelector('ele')?.textContent || 0);
@@ -157,10 +128,6 @@ function parseGPX(xmlText) {
     document.getElementById('statDplus').innerText = Math.round(dp);
     document.getElementById('statDminus').innerText = Math.round(dm);
     waypoints = [createWP("DÉPART", 0, fullTrace[0].y, 0, 0, '🏁', true)];
-    wpts.forEach(w => {
-        let best = findNearestByGPS(parseFloat(w.getAttribute('lat')), parseFloat(w.getAttribute('lon')));
-        waypoints.push(createWP(w.querySelector('name')?.textContent || "WP", best.x, best.y, best.dp, best.dm, '🚩'));
-    });
     waypoints.push(createWP("ARRIVÉE", fullTrace[fullTrace.length-1].x, fullTrace[fullTrace.length-1].y, dp, dm, '🏁', true));
     initMainChart(); render(); saveToLocal();
 }
@@ -172,7 +139,6 @@ function initMainChart() {
         type: 'line',
         data: { labels: fullTrace.map(p => p.x.toFixed(2)), datasets: [{ data: fullTrace.map(p => p.y), borderColor: '#e63946', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(230, 57, 70, 0.05)' }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} },
-            scales: { x: { ticks: { callback: (val, index) => fullTrace[index] ? fullTrace[index].x.toFixed(1) : '' } } },
             onClick: (e) => {
                 const points = mainChart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
                 if (points.length) {
@@ -188,190 +154,54 @@ function initMainChart() {
 function render() {
     const list = document.getElementById('wpList'); list.innerHTML = "";
     waypoints.sort((a,b) => a.dist - b.dist);
-    const maxDP = parseFloat(document.getElementById('statDplus').innerText || 0);
-    const maxDM = parseFloat(document.getElementById('statDminus').innerText || 0);
-
     waypoints.forEach((w, i) => {
         let isLast = (i === waypoints.length - 1);
-        let sDP = i > 0 ? (w.dp - waypoints[i-1].dp) : 0;
-        let sDM = i > 0 ? (w.dm - waypoints[i-1].dm) : 0;
         const container = document.createElement('div');
-        container.innerHTML = `
-            <div class="wp-row">
-                <button class="btn" style="padding:2px 5px; background:#f1f5f9" onclick="toggleDetail(${i})">👁️</button>
-                <input type="text" value="${w.type}" style="text-align:center" onchange="waypoints[${i}].type=this.value; saveToLocal();">
-                <input type="text" value="${w.name}" onchange="waypoints[${i}].name=this.value; saveToLocal();">
-                <input type="number" step="0.1" value="${w.dist}" onchange="updatePoint(${i}, this.value)">
-                <div>${w.ele}m</div>
-                <div style="font-size:0.8rem; background:#f0f9ff; padding:4px; border-radius:4px;"><span class="diff-p">+${Math.round(sDP)}</span> / <span class="diff-m">-${Math.round(sDM)}</span></div>
-                <div style="font-size:0.7rem"><span class="diff-p">+${w.dp}</span> / <span class="diff-m">-${w.dm}</span></div>
-                <div style="font-size:0.7rem; color:#999">▲${Math.max(0, maxDP - w.dp)} / ▼${Math.max(0, maxDM - w.dm)}</div>
-                ${isLast ? '<div></div>' : `<input type="text" value="${w.pace}" id="pace-${i}" onchange="saveToLocal(); calculate();">`}
-                ${isLast ? '<div></div>' : `<input type="number" value="${w.pause}" id="pause-${i}" onchange="saveToLocal(); calculate();">`}
-                <div class="badge eta" id="eta-${i}">--:--</div>
-                <div class="badge race-time" id="rt-${i}">--:--</div>
-                ${w.fixed ? '<div></div>' : `<button onclick="waypoints.splice(${i},1); render(); saveToLocal();" style="border:none; color:red; cursor:pointer; background:none;">✕</button>`}
-            </div>
-            <div id="detail-${i}" class="section-detail">
-                <div class="detail-grid">
-                    <div>
-                        <div class="slope-val" id="slope-${i}">0%</div>
-                        <p style="color:var(--gray)">Pente globale</p>
-                        <div id="info-${i}" style="line-height:1.8"></div>
-                        <textarea placeholder="Notes stratégiques..." onchange="waypoints[${i}].note=this.value; saveToLocal();">${w.note || ""}</textarea>
-                    </div>
-                    <div style="height:160px"><canvas id="chart-${i}"></canvas></div>
-                </div>
-            </div>`;
+        container.innerHTML = `<div class="wp-row">
+            <button class="btn" style="padding:2px 5px; background:#f1f5f9" onclick="toggleDetail(${i})">👁️</button>
+            <input type="text" value="${w.type}" onchange="waypoints[${i}].type=this.value; saveToLocal();">
+            <input type="text" value="${w.name}" onchange="waypoints[${i}].name=this.value; saveToLocal();">
+            <input type="number" step="0.1" value="${w.dist}" onchange="updatePoint(${i}, this.value)">
+            <div>${w.ele}m</div>
+            <div style="font-size:0.8rem; color:#10b981">+${i>0?Math.round(w.dp-waypoints[i-1].dp):0} / -${i>0?Math.round(w.dm-waypoints[i-1].dm):0}</div>
+            <div style="font-size:0.7rem">+${w.dp} / -${w.dm}</div>
+            <div style="font-size:0.7rem; color:#999">Reste: ${Math.round(document.getElementById('statDplus').innerText - w.dp)}m</div>
+            ${isLast ? '<div></div>' : `<input type="text" value="${w.pace}" id="pace-${i}" onchange="calculate(); saveToLocal();">`}
+            ${isLast ? '<div></div>' : `<input type="number" value="${w.pause}" id="pause-${i}" onchange="calculate(); saveToLocal();">`}
+            <div class="badge eta" id="eta-${i}">--:--</div>
+            <div class="badge" style="background:#e2e8f0" id="rt-${i}">--:--</div>
+            ${w.fixed ? '<div></div>' : `<button onclick="waypoints.splice(${i},1); render(); saveToLocal();" style="border:none; color:red; cursor:pointer; background:none;">✕</button>`}
+        </div><div id="detail-${i}" class="section-detail">...</div>`;
         list.appendChild(container);
     });
     calculate();
 }
 
 function calculate() {
-    waypoints.forEach((w, i) => {
-        const pIn = document.getElementById(`pace-${i}`), sIn = document.getElementById(`pause-${i}`);
-        if(pIn) w.pace = pIn.value; if(sIn) w.pause = parseInt(sIn.value || 0);
-    });
     let startDec = timeToDec(document.getElementById('startTime').value), elapsed = 0;
     waypoints.forEach((w, i) => {
         if(i > 0) {
-            let p = waypoints[i-1].pace.split(':');
+            let pIn = document.getElementById(`pace-${i-1}`).value;
+            let p = pIn.split(':');
             elapsed += (w.dist - waypoints[i-1].dist) * (parseInt(p[0]||0) + (parseInt(p[1]||0)/60));
         }
         document.getElementById(`eta-${i}`).innerText = decToTime(startDec + (elapsed/60));
         document.getElementById(`rt-${i}`).innerText = formatDuration(elapsed);
-        if(i < waypoints.length-1) elapsed += w.pause;
+        if(i < waypoints.length-1) elapsed += parseInt(document.getElementById(`pause-${i}`).value || 0);
     });
-    const totalDist = parseFloat(document.getElementById('statDist').innerText);
-    if(totalDist > 0) {
-        let avgP = elapsed / totalDist;
-        let mm = Math.floor(avgP), ss = Math.round((avgP - mm) * 60);
-        if(ss == 60) { mm++; ss = 0; }
-        document.getElementById('avgPace').innerText = mm + ":" + (ss < 10 ? '0' : '') + ss;
-    }
-    document.getElementById('finalEta').innerText = document.getElementById(`eta-${waypoints.length-1}`).innerText;
-    document.getElementById('finalRaceTime').innerText = formatDuration(elapsed);
-}
-
-function toggleDetail(idx) {
-    const el = document.getElementById(`detail-${idx}`); if(!el) return;
-    const isOpening = el.style.display !== 'block';
-    if(isOpening && idx < waypoints.length - 1 && fullTrace.length) { el.style.display = 'block'; drawDetailChart(idx); } 
-    else { el.style.display = 'none'; }
-}
-
-function toggleAllDetails() {
-    allOpen = !allOpen;
-    waypoints.forEach((_, i) => { if(i < waypoints.length - 1) { 
-        const el = document.getElementById(`detail-${i}`);
-        if(allOpen) { el.style.display = 'block'; drawDetailChart(i); } else { el.style.display = 'none'; }
-    }});
-}
-
-function drawDetailChart(idx) {
-    const s = parseFloat(waypoints[idx].dist), e = parseFloat(waypoints[idx+1].dist);
-    const data = fullTrace.filter(p => p.x >= (s - 0.005) && p.x <= (e + 0.005));
-    if(data.length < 2) return;
-    let dA = 0, dD = 0;
-    for(let j=1; j<data.length; j++) {
-        let step = (data[j].x - data[j-1].x) * 1000;
-        if(data[j].y > data[j-1].y) dA += step; else dD += step;
-    }
-    const sDP = Math.round(waypoints[idx+1].dp - waypoints[idx].dp), sDM = Math.round(waypoints[idx+1].dm - waypoints[idx].dm);
-    const sA = dA > 0 ? ((sDP / dA) * 100).toFixed(1) : "0", sD = dD > 0 ? ((sDM / dD) * 100).toFixed(1) : "0";
-    const sG = ((data[data.length-1].y - data[0].y) / ((e - s)*1000) * 100).toFixed(1);
-    const getCl = v => { v=Math.abs(v); return v<7?'slope-low':v<15?'slope-mid':'slope-high'; };
-    document.getElementById(`slope-${idx}`).innerText = (sG > 0 ? "+" : "") + sG + "%";
-    document.getElementById(`info-${idx}`).innerHTML = `<b>Section :</b> ${(e-s).toFixed(2)} km<br><span class="diff-p">▲ D+ : ${sDP}m</span> <span class="slope-pill ${getCl(sA)}">${sA}%</span><br><span class="diff-m">▼ D- : ${sDM}m</span> <span class="slope-pill ${getCl(sD)}">${sD}%</span>`;
-    if(detailCharts[idx]) detailCharts[idx].destroy();
-    detailCharts[idx] = new Chart(document.getElementById(`chart-${idx}`).getContext('2d'), {
-        type: 'line',
-        data: { labels: data.map(p => p.x.toFixed(2)), datasets: [{ data: data.map(p => p.y), borderColor: '#e63946', fill: true, backgroundColor: 'rgba(230, 57, 70, 0.1)', pointRadius:0 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, 
-            scales: { x: { display: true, ticks: { maxTicksLimit: 5, callback: (val, index) => data[index] ? data[index].x.toFixed(1) : '' } } } }
-    });
-}
-
-function updatePoint(i, d) {
-    if(!fullTrace.length) { waypoints[i].dist = d; render(); saveToLocal(); return; }
-    let best = fullTrace[0], min = Infinity;
-    fullTrace.forEach(pt => { if(Math.abs(pt.x - d) < min) { min = Math.abs(pt.x - d); best = pt; } });
-    waypoints[i].dist = best.x.toFixed(2); waypoints[i].ele = Math.round(best.y); waypoints[i].dp = Math.round(best.dp); waypoints[i].dm = Math.round(best.dm);
-    render(); saveToLocal();
-}
-
-function addManualWP() { 
-    let d = waypoints.length > 0 ? parseFloat(waypoints[waypoints.length-1].dist) + 1 : 0;
-    waypoints.push(createWP("Point", d, 0, 0, 0, '📍')); render(); saveToLocal();
-}
-
-function exportGPX() {
-    if(!fullTrace.length) return alert("Importez un GPX d'abord");
-    let xml = `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="SwissPaceV9.2" xmlns="http://www.topografix.com/GPX/1/1">`;
-    waypoints.forEach(w => {
-        let pt = fullTrace.find(p => p.x >= (w.dist - 0.01)) || fullTrace[0];
-        xml += `\n<wpt lat="${pt.lat}" lon="${pt.lon}"><ele>${w.ele}</ele><name>${w.type} ${w.name}</name><desc>${w.note || ""}</desc></wpt>`;
-    });
-    xml += `\n<trk><name>Trace</name><trkseg>`;
-    fullTrace.forEach(p => { xml += `\n<trkpt lat="${p.lat}" lon="${p.lon}"><ele>${p.y}</ele></trkpt>`; });
-    xml += `\n</trkseg></trk>\n</gpx>`;
-    const blob = new Blob([xml], {type: 'application/gpx+xml'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "SwissPace_Export.gpx"; a.click();
 }
 
 function haversine(p1, p2) {
     const R = 6371e3; const dLat = (p2.lat-p1.lat)*Math.PI/180, dLon = (p2.lon-p1.lon)*Math.PI/180;
-    const a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(p1.lat*Math.PI/180)*Math.cos(p2.lat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    const a = Math.sin(dLat/2)**2 + Math.cos(p1.lat*Math.PI/180)*Math.cos(p2.lat*Math.PI/180)*Math.sin(dLon/2)**2;
     return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-function findNearestByGPS(lat, lon) {
-    let best = fullTrace[0], minDist = Infinity;
-    fullTrace.forEach(pt => { let d = Math.sqrt(Math.pow(pt.lat-lat,2) + Math.pow(pt.lon-lon,2)); if(d < minDist) { minDist = d; best = pt; } });
-    return best;
-}
-function createWP(name, dist, ele, dp, dm, type, fixed=false) { return { name, dist: parseFloat(dist).toFixed(2), ele: Math.round(ele), dp: Math.round(dp), dm: Math.round(dm), pace: "10:00", pause: 0, type, fixed, note: "" }; }
+function createWP(name, dist, ele, dp, dm, type, fixed=false) { return { name, dist: parseFloat(dist).toFixed(2), ele: Math.round(ele), dp: Math.round(dp), dm: Math.round(dm), pace: "10:00", pause: 0, type, fixed }; }
 function timeToDec(t) { let p = t.split(':'); return parseInt(p[0]) + parseInt(p[1])/60; }
 function decToTime(d) { d=d%24; let h=Math.floor(d), m=Math.round((d-h)*60); if(m==60){h++;m=0} return (h<10?'0'+h:h)+':'+(m<10?'0'+m:m); }
 function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0':'')+Math.round(m%60); }
-    function toggleHelp() {
-    const modal = document.getElementById('helpModal');
-    if (modal.style.display === 'none' || modal.style.display === '') {
-        modal.style.display = 'flex';
-    } else {
-        modal.style.display = 'none';
-    }
-}
+function exportGPX() { alert("Exportation..."); }
+function toggleDetail(i) { document.getElementById(`detail-${i}`).style.display = (document.getElementById(`detail-${i}`).style.display === 'block') ? 'none' : 'block'; }
 </script>
-    <div id="helpModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:20px;">
-    <div class="card" style="background: white; color: var(--dark); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 12px; position: relative; text-align: left;">
-        <button onclick="toggleHelp()" style="position:absolute; right:15px; top:15px; border:none; background:none; font-size:2rem; cursor:pointer;">&times;</button>
-        <h1 style="color:var(--swiss-red); margin-top:0;">WattPace</h1>
-        <div style="line-height:1.6; font-size:12px;">
-            <h3>📖 Mode d'Emploi</h3>
-            <p>Bienvenue sur le test de <b>WattPace</b>, votre partenaire de planification stratégique pour le trail et la course à pied.</p>
-            <h3>🚀 Démarrage Rapide</h3>
-            <p>Ouvrez le lien dans votre navigateur, importez votre parcours : Cliquez sur <b>📁 IMPORTER GPX</b> et sélectionnez votre tracé.<br>
-            Réglez votre départ : Indiquez votre heure de départ en haut à droite.</p>
-            <h3>⏱️ Planification de Course</h3>
-            <p><b>Ajouter des points :</b> Cliquez n'importe où sur le graphique d'élévation principal ou utilisez le bouton ➕ POINT.<br>
-            <b>Définir l'effort :</b> Ajustez l'Allure (min/km) et la Pause (min). <i>Note : séparez les minutes et secondes par ":" (ex: 12:30).</i><br>
-            <b>Analyse détaillée :</b> Cliquez sur l'icône 👁️ pour voir le profil de section.</p>
-            <h3>📊 Lecture des Résultats</h3>
-            <p><b>Passage :</b> Heure réelle estimée. <b>Course :</b> Temps écoulé. <b>Allure Moyenne :</b> Vérifiez l'allure globale dans la barre latérale.</p>
-            <h3>💾 Sauvegarde et Export</h3>
-            <p>Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec Waypoints pour votre montre.</p>
-            <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red); margin-top:10px;">
-                <h3>💡 Conseil pour des tracés propres</h3>
-                <p>Si votre tracé semble bruité (dénivelé faussé), importez-le dans Garmin Connect, enregistrez-le, ré-exportez-le, puis ré-importez-le dans WattPace pour bénéficier d'un lissage automatique.</p>
-            </div>
-        </div>
-        <button class="btn btn-calc" onclick="toggleHelp()" style="width:100%; margin-top:20px;">FERMER</button>
-    </div>
-</div>
 </body>
-
 </html>
-
-
-
