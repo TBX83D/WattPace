@@ -59,6 +59,7 @@
             <button class="btn btn-calc" onclick="calculate(); saveToLocal();">🔄 CALCULER</button>
             <button class="btn btn-load" onclick="loadFromLocal()">📥 RÉCUPÉRER</button>
             <button class="btn btn-reset" onclick="resetAll()">🗑️ RESET</button>
+            <button class="btn" style="background: var(--gray); color: white;" onclick="toggleHelp()">❓ MODE D'EMPLOI</button>
             <div style="flex-grow:1"></div>
             <label>Départ : </label>
             <input type="time" id="startTime" value="08:00" style="width:85px" onchange="calculate(); saveToLocal();">
@@ -295,8 +296,43 @@ function createWP(name, dist, ele, dp, dm, type, fixed=false) { return { name, d
 function timeToDec(t) { let p = t.split(':'); return parseInt(p[0]) + parseInt(p[1])/60; }
 function decToTime(d) { d=d%24; let h=Math.floor(d), m=Math.round((d-h)*60); if(m==60){h++;m=0} return (h<10?'0'+h:h)+':'+(m<10?'0'+m:m); }
 function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0':'')+Math.round(m%60); }
+    function toggleHelp() {
+    const modal = document.getElementById('helpModal');
+    if (modal.style.display === 'none' || modal.style.display === '') {
+        modal.style.display = 'flex';
+    } else {
+        modal.style.display = 'none';
+    }
+}
 </script>
+    <div id="helpModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:20px;">
+    <div class="card" style="background: white; color: var(--dark); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 12px; position: relative; text-align: left;">
+        <button onclick="toggleHelp()" style="position:absolute; right:15px; top:15px; border:none; background:none; font-size:2rem; cursor:pointer;">&times;</button>
+        <h1 style="color:var(--swiss-red); margin-top:0;">WattPace</h1>
+        <div style="line-height:1.6; font-size:12px;">
+            <h3>📖 Mode d'Emploi</h3>
+            <p>Bienvenue sur le test de <b>WattPace</b>, votre partenaire de planification stratégique pour le trail et la course à pied.</p>
+            <h3>🚀 Démarrage Rapide</h3>
+            <p>Ouvrez le lien dans votre navigateur, importez votre parcours : Cliquez sur <b>📁 IMPORTER GPX</b> et sélectionnez votre tracé.<br>
+            Réglez votre départ : Indiquez votre heure de départ en haut à droite.</p>
+            <h3>⏱️ Planification de Course</h3>
+            <p><b>Ajouter des points :</b> Cliquez n'importe où sur le graphique d'élévation principal ou utilisez le bouton ➕ POINT.<br>
+            <b>Définir l'effort :</b> Ajustez l'Allure (min/km) et la Pause (min). <i>Note : séparez les minutes et secondes par ":" (ex: 12:30).</i><br>
+            <b>Analyse détaillée :</b> Cliquez sur l'icône 👁️ pour voir le profil de section.</p>
+            <h3>📊 Lecture des Résultats</h3>
+            <p><b>Passage :</b> Heure réelle estimée. <b>Course :</b> Temps écoulé. <b>Allure Moyenne :</b> Vérifiez l'allure globale dans la barre latérale.</p>
+            <h3>💾 Sauvegarde et Export</h3>
+            <p>Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec Waypoints pour votre montre.</p>
+            <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red); margin-top:10px;">
+                <h3>💡 Conseil pour des tracés propres</h3>
+                <p>Si votre tracé semble bruité (dénivelé faussé), importez-le dans Garmin Connect, enregistrez-le, ré-exportez-le, puis ré-importez-le dans WattPace pour bénéficier d'un lissage automatique.</p>
+            </div>
+        </div>
+        <button class="btn btn-calc" onclick="toggleHelp()" style="width:100%; margin-top:20px;">FERMER</button>
+    </div>
+</div>
 </body>
 
 </html>
+
 
