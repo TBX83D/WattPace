@@ -57,9 +57,9 @@
             <button class="btn btn-export" onclick="exportGPX()">💾 EXPORTER GPX</button>
             <button class="btn btn-add" onclick="addManualWP()">➕ POINT</button>
             <button class="btn btn-calc" onclick="calculate(); saveToLocal();">🔄 CALCULER</button>
+            <button class="btn" style="background: var(--gray); color: white;" onclick="toggleHelp()">❓ MODE D'EMPLOI</button>
             <button class="btn btn-load" onclick="loadFromLocal()">📥 RÉCUPÉRER</button>
             <button class="btn btn-reset" onclick="resetAll()">🗑️ RESET</button>
-            <button class="btn" style="background: var(--gray); color: white;" onclick="toggleHelp()">❓ MODE D'EMPLOI</button>
             <div style="flex-grow:1"></div>
             <label>Départ : </label>
             <input type="time" id="startTime" value="08:00" style="width:85px" onchange="calculate(); saveToLocal();">
@@ -87,6 +87,44 @@
         <button onclick="window.print()" style="width:100%; margin-top:15px; padding:10px; background:white; color:var(--dark); border:none; border-radius:6px; font-weight:bold;">🖨️ IMPRIMER ROADBOOK</button>
     </div>
 </div>
+
+    <div id="helpModal">
+    <div class="help-content">
+        <button onclick="toggleHelp()" style="position:absolute; right:15px; top:15px; border:none; background:none; font-size:2rem; cursor:pointer;">&times;</button>
+        <h1 style="color:var(--swiss-red); margin-top:0;">WattPace</h1>
+        <div style="line-height:1.6; font-size:12px;">
+            <h3>📖 Mode d'Emploi : WattPace</h3>
+            <p>Bienvenue sur le test de <b>WattPace</b>, votre partenaire de planification stratégique pour le trail et la course à pied.</p>
+            <h3>🚀 Démarrage Rapide</h3>
+            <p>Ouvrez le lien dans votre navigateur, importez votre parcours : Cliquez sur <b>📁 IMPORTER GPX</b> et sélectionnez votre tracé.<br>
+            Réglez votre départ : Indiquez votre heure de départ en haut à droite.</p>
+            <h3>⏱️ Planification de Course</h3>
+            <p><b>Ajouter des points :</b> Cliquez n'importe où sur le graphique d'élévation principal ou utilisez le bouton ➕ POINT pour ajouter un ravitaillement ou un sommet.<br>
+            <b>Définir l'effort :</b> Dans le tableau, ajustez l'Allure (min/km) et le temps de Pause (min) pour chaque section. Attention, pour l'allure, celle-ci doit être séparée par ":" entre les min et sec afin d'être pris en compte par l'application.<br>
+            <b>Analyse détaillée :</b> Cliquez sur l'icône 👁️ à gauche d'un point pour ouvrir le profil précis de la section (pentes moyennes, D+, D- et notes).</p>
+            <h3>📊 Lecture des Résultats</h3>
+            <p><b>Passage :</b> Heure réelle estimée à ce point.<br>
+            <b>Course :</b> Temps de course écoulé depuis le départ.<br>
+            <b>Allure Moyenne :</b> Vérifiez votre allure globale (incluant les pauses) dans la barre latérale pour voir si elle correspond à votre objectif.</p>
+            <h3>💾 Sauvegarde et Export</h3>
+            <p>Vos données sont sauvegardées sur votre appareil.<br>
+            Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec tous vos nouveaux points de passage intégrés pour votre montre GPS (Waypoint).</p>
+            <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red);">
+                <h3>💡 Conseil pour des tracés propres (GPX "Bruité")</h3>
+                <p>Il arrive que certains fichiers GPX soient "bruités" : ils contiennent trop de points inutiles ou des erreurs d'altitude en dents de scie, ce qui fausse les calculs de dénivelé. La solution recommandée : importez-le dans Garmin Connect, enregistrez-le, puis ré-exportez-le. Garmin applique automatiquement un lissage intelligent qui rend la lecture beaucoup plus fluide. Il ne reste plus qu'à le ré-importer dans WattPace.</p>
+            </div>
+        </div>
+        <button class="btn btn-calc" onclick="toggleHelp()" style="width:100%; margin-top:20px;">J'AI COMPRIS</button>
+    </div>
+</div>
+
+<script>
+let fullTrace = []; let waypoints = []; let mainChart = null;
+
+function toggleHelp() {
+    const modal = document.getElementById('helpModal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
 
 <script>
 let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts = {}; let allOpen = false;
@@ -334,5 +372,6 @@ function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0
 </body>
 
 </html>
+
 
 
