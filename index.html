@@ -121,6 +121,11 @@
 <script>
 let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts = {}; let allOpen = false;
 
+ function toggleHelp() {
+    const modal = document.getElementById('helpModal');
+    modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
+}
+
 function saveToLocal() { localStorage.setItem('swissPaceData', JSON.stringify({ waypoints, startTime: document.getElementById('startTime').value })); }
 function loadFromLocal() { const saved = localStorage.getItem('swissPaceData'); if (saved) { const data = JSON.parse(saved); waypoints = data.waypoints; document.getElementById('startTime').value = data.startTime || "08:00"; render(); } }
 function resetAll() { if(confirm("Effacer tout ?")) { localStorage.removeItem('swissPaceData'); location.reload(); } }
@@ -330,3 +335,4 @@ function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0
 </body>
 
 </html>
+
