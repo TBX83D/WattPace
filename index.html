@@ -125,7 +125,7 @@ let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts =
 
  function toggleHelp() {
     const modal = document.getElementById('helpModal');
-    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    modal.style.display = (window.getComputedStyle(modal).display === 'none') ? 'flex' : 'none';
 }
 
 function saveToLocal() { localStorage.setItem('swissPaceData', JSON.stringify({ waypoints, startTime: document.getElementById('startTime').value })); }
@@ -337,6 +337,7 @@ function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0
 </body>
 
 </html>
+
 
 
 
