@@ -77,16 +77,24 @@
         <div id="wpList"></div>
     </div>
 
-    <div class="card side">
-        <h3>Récapitulatif</h3>
-        <p>Distance : <b id="statDist">0</b> km</p>
-        <p>Dénivelé : <br><span class="diff-p">▲ <span id="statDplus">0</span>m</span> / <span class="diff-m">▼ <span id="statDminus">0</span>m</span></p>
-        <hr style="opacity:0.2">
-        <p>ARRIVÉE ESTIMÉE</p>
-        <div style="font-size: 2.2rem; font-weight: 900; color: var(--swiss-red);" id="finalEta">--:--</div>
-        <p>CHRONO TOTAL : <br><b id="finalRaceTime">--</b></p>
-        <p>ALLURE MOYENNE : <br><b id="avgPace" style="color:#6366f1;">--:--</b> min/km</p>
-        <button onclick="window.print()" style="width:100%; margin-top:15px; padding:10px; background:white; color:var(--dark); border:none; border-radius:6px; font-weight:bold;">🖨️ IMPRIMER ROADBOOK</button>
+   <div class="card side">
+    <h3>Récapitulatif</h3>
+    <p>Distance : <b id="statDist">0</b> km</p>
+    <p>Dénivelé : <br><span class="diff-p">▲ <span id="statDplus">0</span>m</span> / <span class="diff-m">▼ <span id="statDminus">0</span>m</span></p>
+    <hr style="opacity:0.2">
+    <p>ARRIVÉE ESTIMÉE</p>
+    <div style="font-size: 2.2rem; font-weight: 900; color: var(--swiss-red);" id="finalEta">--:--</div>
+    <p>CHRONO TOTAL : <br><b id="finalRaceTime">--</b></p>
+    <p>ALLURE MOYENNE : <br><b id="avgPace" style="color:#6366f1;">--:--</b> min/km</p>
+    
+    <button onclick="window.print()" style="width:100%; margin-top:15px; padding:10px; background:white; color:var(--dark); border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ IMPRIMER ROADBOOK</button>
+
+    <div style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+        <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 10px;">Aidez-moi à améliorer l'outil :</p>
+        <a href="https://forms.gle/ntxSQarL4dh5ymm89" target="_blank" 
+           style="display:block; text-decoration:none; background:#10b981; color:white; padding:12px; border-radius:8px; font-weight:bold; transition:0.3s; text-align:center;">
+           📊 DONNER MON AVIS
+        </a>
     </div>
 </div>
     
@@ -337,6 +345,7 @@ function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0
 </body>
 
 </html>
+
 
 
 
