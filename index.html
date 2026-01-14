@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>SwissPace V0.1</title>
+    <title>SwissPace V1.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --swiss-red: #e63946; --dark: #1d3557; --gray: #64748b; --light-bg: #f8fafc; }
@@ -19,19 +19,37 @@
         .btn-reset { background: #94a3b8; color: white; }
         #chart-container { height: 250px; margin-bottom: 15px; cursor: crosshair; }
         
-        .wp-row { display: grid; grid-template-columns: 30px 40px 1fr 70px 60px 100px 90px 90px 100px 75px 70px 80px 30px; gap: 8px; 
-                  padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+        /* Grille écran : 13 colonnes */
+        .wp-row { 
+            display: grid; 
+            grid-template-columns: 35px 45px minmax(120px, 1.5fr) 45px 45px 75px 75px 75px 65px 45px 65px 65px 30px; 
+            gap: 8px; 
+            padding: 10px; 
+            border-bottom: 1px solid #eee; 
+            align-items: center; 
+        }
         .wp-header { font-weight: bold; color: var(--gray); text-transform: uppercase; font-size: 0.6rem; background: #f1f5f9; position: sticky; top: 0; z-index: 10; }
         
         input, textarea { padding: 5px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; font-size: 11px; }
         textarea { resize: vertical; min-height: 40px; margin-top: 10px; font-family: inherit; }
-        .badge { padding: 4px; border-radius: 4px; text-align: center; font-weight: bold; font-family: monospace; }
-        .eta { background: var(--dark); color: white; }
-        .race-time { background: #e2e8f0; color: var(--dark); }
+        
+        /* Style des badges (Écran et Impression) */
+        .badge { 
+            padding: 4px; 
+            border-radius: 4px; 
+            text-align: center; 
+            font-weight: bold; 
+            font-family: monospace; 
+            -webkit-print-color-adjust: exact; /* Force la couleur à l'impression pour Chrome/Safari */
+            print-color-adjust: exact;         /* Force la couleur à l'impression standard */
+        }
+        .eta { background: var(--dark) !important; color: white !important; }
+        .race-time { background: #e2e8f0 !important; color: var(--dark) !important; }
+        
         .diff-p { color: #059669; font-weight: 600; }
         .diff-m { color: #dc2626; font-weight: 600; }
         .side { background: var(--dark); color: white; position: sticky; top: 20px; height: fit-content; text-align: center; padding: 15px; border-radius: 12px; }
-         #helpModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:20px; }
+        #helpModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:20px; }
         .help-content { background: white; color: var(--dark); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 12px; position: relative; }
         
         .slope-pill { padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; }
@@ -42,10 +60,38 @@
         .section-detail { display: none; background: #fffcfc; padding: 15px; border: 1px solid #feb2b2; border-radius: 0 0 8px 8px; margin-top: -1px; }
         .detail-grid { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
         .slope-val { font-size: 1.5rem; font-weight: 900; color: var(--swiss-red); }
+        
+        /* --- GESTION DE L'IMPRESSION --- */
         @media print { 
-            .toolbar, .btn, .side, .btn-calc { display: none !important; } 
-            .layout { grid-template-columns: 1fr; }
-            .section-detail { display: block !important; page-break-inside: avoid; }
+            @page { size: A4 landscape; margin: 1cm; }
+            
+            .toolbar, .btn, .side, .btn-calc, .wp-row button, .wp-row div:last-child, .wp-row div:first-child { 
+                display: none !important; 
+            } 
+            
+            #chart-container { display: block !important; height: 180px !important; margin-bottom: 60px !important; }
+            
+            body { background: white; padding: 0; font-size: 9px; }
+            .card { box-shadow: none; border: none; padding: 0; }
+            .layout { display: block; }
+
+            .wp-row { 
+                display: grid !important;
+                grid-template-columns: 45px minmax(180px, 2fr) 45px 45px 65px 65px 65px 60px 45px 65px 65px !important; 
+                gap: 5px; 
+                page-break-inside: avoid; 
+            }
+            
+            /* On s'assure que les badges gardent leur style */
+            .badge {
+                display: inline-block;
+                width: 100%;
+                box-sizing: border-box;
+                border: 0.5px solid #ccc; /* Petit contour pour plus de netteté sur papier */
+            }
+
+            .section-detail { page-break-inside: avoid; border: 1px solid #eee !important; }
+            input { border: none !important; background: transparent !important; }
         }
     </style>
 </head>
@@ -72,7 +118,8 @@
         <div class="wp-header wp-row">
             <div onclick="toggleAllDetails()" style="cursor:pointer">👁️</div>
             <div onclick="toggleAllDetails()" style="cursor:pointer">Icon</div>
-            <div>Nom</div><div>Km</div><div>Alt.</div><div>D+/- Seg.</div><div>D+/- Fait</div><div>D+/- Reste</div><div>Allure m/km</div><div>Pause</div><div>Passage</div><div>Course</div><div></div>
+            <div>Nom</div><div>Km</div><div>Alt.</div><div>D+/- Seg.</div><div>D+/- Fait</div><div>D+/- Reste</div><div>Allure</div><div>Pause</div><div>Passage</div><div>Course</div>
+            <div></div>
         </div>
         <div id="wpList"></div>
     </div>
@@ -93,36 +140,19 @@
         <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 10px;">Aidez-moi à améliorer l'outil :</p>
         <a href="https://forms.gle/ntxSQarL4dh5ymm89" target="_blank" 
            style="display:block; text-decoration:none; background:#10b981; color:white; padding:12px; border-radius:8px; font-weight:bold; transition:0.3s; text-align:center;">
-           📊 DONNER MON AVIS
+            📊 DONNER MON AVIS
         </a>
     </div>
 </div>
-    
+</div>
+
 <div id="helpModal">
     <div class="help-content">
         <button onclick="toggleHelp()" style="position:absolute; right:15px; top:15px; border:none; background:none; font-size:2rem; cursor:pointer;">&times;</button>
         <h1 style="color:var(--swiss-red); margin-top:0;">WattPace</h1>
         <div style="line-height:1.6; font-size:12px;">
-            <h3>📖 Mode d'Emploi : WattPace</h3>
-            <p>Bienvenue sur le test de <b>WattPace</b>, votre partenaire de planification stratégique pour le trail et la course à pied.</p>
-            <h3>🚀 Démarrage Rapide</h3>
-            <p>Ouvrez le lien dans votre navigateur, importez votre parcours : Cliquez sur <b>📁 IMPORTER GPX</b> et sélectionnez votre tracé.<br>
-            Réglez votre départ : Indiquez votre heure de départ en haut à droite.</p>
-            <h3>⏱️ Planification de Course</h3>
-            <p><b>Ajouter des points :</b> Cliquez n'importe où sur le graphique d'élévation principal ou utilisez le bouton ➕ POINT pour ajouter un ravitaillement ou un sommet.<br>
-            <b>Définir l'effort :</b> Dans le tableau, ajustez l'Allure (min/km) et le temps de Pause (min) pour chaque section. Attention, pour l'allure, celle-ci doit être séparée par ":" entre les min et sec afin d'être pris en compte par l'application.<br>
-            <b>Analyse détaillée :</b> Cliquez sur l'icône 👁️ à gauche d'un point pour ouvrir le profil précis de la section (pentes moyennes, D+, D- et notes).</p>
-            <h3>📊 Lecture des Résultats</h3>
-            <p><b>Passage :</b> Heure réelle estimée à ce point.<br>
-            <b>Course :</b> Temps de course écoulé depuis le départ.<br>
-            <b>Allure Moyenne :</b> Vérifiez votre allure globale (incluant les pauses) dans la barre latérale pour voir si elle correspond à votre objectif.</p>
-            <h3>💾 Sauvegarde et Export</h3>
-            <p>Vos données sont sauvegardées sur votre appareil.<br>
-            Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec tous vos nouveaux points de passage intégrés pour votre montre GPS (Waypoint).</p>
-            <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red);">
-                <h3>💡 Conseil pour des tracés propres (GPX "Bruité")</h3>
-                <p>Il arrive que certains fichiers GPX soient "bruités" : ils contiennent trop de points inutiles ou des erreurs d'altitude en dents de scie, ce qui fausse les calculs de dénivelé. La solution recommandée : importez-le dans Garmin Connect (ou autre application), enregistrez-le, puis ré-exportez-le. Garmin (ou autre) applique automatiquement un lissage intelligent qui rend la lecture beaucoup plus fluide. Il ne reste plus qu'à le ré-importer dans WattPace.</p>
-            </div>
+            <h3>📖 Mode d'Emploi</h3>
+            <p>Importez votre GPX et planifiez vos temps de passage stratégiques.</p>
         </div>
         <button class="btn btn-calc" onclick="toggleHelp()" style="width:100%; margin-top:20px;">J'AI COMPRIS</button>
     </div>
@@ -131,7 +161,7 @@
 <script>
 let fullTrace = []; let waypoints = []; let mainChart = null; let detailCharts = {}; let allOpen = false;
 
- function toggleHelp() {
+function toggleHelp() {
     const modal = document.getElementById('helpModal');
     modal.style.display = (window.getComputedStyle(modal).display === 'none') ? 'flex' : 'none';
 }
@@ -205,9 +235,9 @@ function render() {
         const container = document.createElement('div');
         container.innerHTML = `
             <div class="wp-row">
-                <button class="btn" style="padding:2px 5px; background:#f1f5f9" onclick="toggleDetail(${i})">👁️</button>
+                <div class="no-print"><button class="btn" style="padding:2px 5px; background:#f1f5f9" onclick="toggleDetail(${i})">👁️</button></div>
                 <input type="text" value="${w.type}" style="text-align:center" onchange="waypoints[${i}].type=this.value; saveToLocal();">
-                <input type="text" value="${w.name}" onchange="waypoints[${i}].name=this.value; saveToLocal();">
+                <input type="text" value="${w.name}" style="text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" onchange="waypoints[${i}].name=this.value; saveToLocal();">
                 <input type="number" step="0.1" value="${w.dist}" onchange="updatePoint(${i}, this.value)">
                 <div>${w.ele}m</div>
                 <div style="font-size:0.8rem; background:#f0f9ff; padding:4px; border-radius:4px;"><span class="diff-p">+${Math.round(sDP)}</span> / <span class="diff-m">-${Math.round(sDM)}</span></div>
@@ -217,7 +247,7 @@ function render() {
                 ${isLast ? '<div></div>' : `<input type="number" value="${w.pause}" id="pause-${i}" onchange="saveToLocal(); calculate();">`}
                 <div class="badge eta" id="eta-${i}">--:--</div>
                 <div class="badge race-time" id="rt-${i}">--:--</div>
-                ${w.fixed ? '<div></div>' : `<button onclick="waypoints.splice(${i},1); render(); saveToLocal();" style="border:none; color:red; cursor:pointer; background:none;">✕</button>`}
+                ${w.fixed ? '<div></div>' : `<div><button onclick="waypoints.splice(${i},1); render(); saveToLocal();" style="border:none; color:red; cursor:pointer; background:none;">✕</button></div>`}
             </div>
             <div id="detail-${i}" class="section-detail">
                 <div class="detail-grid">
@@ -343,10 +373,4 @@ function decToTime(d) { d=d%24; let h=Math.floor(d), m=Math.round((d-h)*60); if(
 function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0':'')+Math.round(m%60); }
 </script>
 </body>
-
 </html>
-
-
-
-
-
