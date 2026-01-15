@@ -100,12 +100,12 @@
 <div class="layout">
     <div class="card">
         <div class="toolbar">
+            <button class="btn" style="background: var(--gray); color: white;" onclick="toggleHelp()">❓ MODE D'EMPLOI</button>
             <button class="btn btn-gpx" onclick="document.getElementById('gpxIn').click()">📁 IMPORTER GPX</button>
             <input type="file" id="gpxIn" accept=".gpx" style="display:none">
             <button class="btn btn-export" onclick="exportGPX()">💾 EXPORTER GPX</button>
             <button class="btn btn-add" onclick="addManualWP()">➕ POINT</button>
             <button class="btn btn-calc" onclick="calculate(); saveToLocal();">🔄 CALCULER</button>
-            <button class="btn" style="background: var(--gray); color: white;" onclick="toggleHelp()">❓ MODE D'EMPLOI</button>
             <button class="btn btn-load" onclick="loadFromLocal()">📥 RÉCUPÉRER</button>
             <button class="btn btn-reset" onclick="resetAll()">🗑️ RESET</button>
             <div style="flex-grow:1"></div>
@@ -164,8 +164,7 @@
             <p><b>Passage :</b> Heure réelle estimée à ce point.<br>
             <b>Course :</b> Temps de course écoulé depuis le départ.<br>
             <b>Allure Moyenne :</b> Vérifiez votre allure globale (incluant les pauses) dans la barre latérale pour voir si elle correspond à votre objectif.</p>
-            <h3>💾 Sauvegarde et Export</h3>
-            <p>Vos données sont sauvegardées sur votre appareil.<br>
+            <h3>💾 Export</h3>
             Cliquez sur <b>💾 EXPORTER GPX</b> pour récupérer votre tracé avec tous vos nouveaux points de passage intégrés pour votre montre GPS (Waypoint).</p>
             <div style="background:#f1f5f9; padding:15px; border-radius:8px; border-left:4px solid var(--swiss-red);">
                 <h3>💡 Conseil pour des tracés propres (GPX "Bruité")</h3>
@@ -392,6 +391,7 @@ function formatDuration(m) { return Math.floor(m/60)+"h"+(Math.round(m%60)<10?'0
 </script>
 </body>
 </html>
+
 
 
 
